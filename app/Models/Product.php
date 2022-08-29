@@ -9,6 +9,11 @@ class Product extends Model
 {
     use HasFactory;
 
+    public function track(): void
+    {
+        $this->stock->each->track();
+    }
+
     // where in stock, magic method
     // equals to where(stock,true);
     public function inStock(): bool
