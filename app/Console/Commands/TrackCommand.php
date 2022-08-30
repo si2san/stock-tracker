@@ -26,8 +26,10 @@ class TrackCommand extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): void
     {
         Product::all()->each->track();
+
+        $this->info('All Done!');
     }
 }
