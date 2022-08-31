@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Http;
 
 class Stock extends Model
 {
@@ -16,14 +15,13 @@ class Stock extends Model
 
     public function track(): void
     {
-        if ($this->retalier->name === 'Best Buy') {
-            $result =  Http::get('http://foo.test')->json();
+        $status = $this->retalier->client()
+            ->checkAvailability($this);
 
-            $this->update([
-                'in_stock' => $result['available'],
-                'price' => $result['price']
-            ]);
-        }
+        $this->update([
+            'in_stock' => $status->available,
+            'price' => $status->price
+        ]);
     }
 
     public function retalier(): BelongsTo
