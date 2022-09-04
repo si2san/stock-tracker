@@ -13,7 +13,7 @@ class BestBuy implements Client
 
         return new StockStatus(
             $result['onlineAvailability'],
-            $result['salePrice'] * 100
+            $this->dollarToCent($result['salePrice']),
         );
     }
 
@@ -22,5 +22,10 @@ class BestBuy implements Client
         $apiKey = \config('services.clients.bestBuy.key');
 
         return "https://api.bestbuy.com/v1/products/{$sku}.json?apiKey={$apiKey}";
+    }
+
+    private function dollarToCent(float $salePrice): int
+    {
+        return $salePrice * 100;
     }
 }
