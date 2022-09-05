@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Closure;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Stock extends Model
 {
@@ -14,7 +14,7 @@ class Stock extends Model
 
     protected $casts = ['in_stock' => 'boolean'];
 
-    public function track(): void
+    public function track(Closure $callback = null): void
     {
         $status = $this->retalier->client()
             ->checkAvailability($this);
@@ -24,7 +24,7 @@ class Stock extends Model
             'price' => $status->price
         ]);
 
-        $this->recordHistory();
+        $callback && $callback($this);
     }
 
     public function retalier(): BelongsTo
@@ -32,22 +32,8 @@ class Stock extends Model
         return $this->belongsTo(Retailer::class, 'retailer_id');
     }
 
-    public function history(): HasMany
+    public function product(): BelongsTo
     {
-        return $this->hasMany(History::class);
-    }
-
-    private function recordHistory(): void
-    {
-        $this->history()->create($this->getHistory());
-    }
-
-    private function getHistory(): array
-    {
-        return [
-            'price' => $this->price,
-            'in_stock' => $this->in_stock,
-            'product_id' => $this->product_id,
-        ];
+        return $this->belongsTo(Product::class);
     }
 }
