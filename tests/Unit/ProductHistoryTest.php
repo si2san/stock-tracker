@@ -20,8 +20,7 @@ class ProductHistoryTest extends TestCase
     {
         $this->seed(RetailerWithProductSeeder::class);
 
-        ClientFactory::shouldReceive('make->checkAvailability')
-            ->andReturn(new StockStatus($available = true, $price = 99));
+        $this->mockClientRequest($available = true, $price = 29900);
 
         $product = Product::first();
 
