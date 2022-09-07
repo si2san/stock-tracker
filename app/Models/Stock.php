@@ -2,8 +2,7 @@
 
 namespace App\Models;
 
-use App\Events\NowInStock;
-use Closure;
+use App\UseCases\TrackStock;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -15,21 +14,9 @@ class Stock extends Model
 
     protected $casts = ['in_stock' => 'boolean'];
 
-    public function track(Closure $callback = null): void
+    public function track(): void
     {
-        $status = $this->retalier->client()
-            ->checkAvailability($this);
-
-        if (!$this->in_stock && $status->available) {
-            event(new NowInStock($this));
-        }
-
-        $this->update([
-            'in_stock' => $status->available,
-            'price' => $status->price
-        ]);
-
-        $callback && $callback($this);
+        (new TrackStock($this))->handle();
     }
 
     public function retalier(): BelongsTo
