@@ -28,9 +28,8 @@ class TrackCommandTest extends TestCase
 
         $this->mockClientRequest();
 
-        $this->artisan('track')
-            ->expectsOutput('All Done!');
-
+        $this->artisan('track');
+        
         $this->assertTrue(Product::first()->inStock());
     }
 }
